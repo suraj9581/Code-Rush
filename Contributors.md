@@ -2,6 +2,7 @@
 ## Ranjana
 
 ## Ram
+Worked on creating agents (Research, Deployment and Writer) with crew AI. Setup Open API as a LLM for the use case. Created a docker file and docker compose setup.
 
 ## Surya
 
