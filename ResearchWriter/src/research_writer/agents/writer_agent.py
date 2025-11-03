@@ -9,7 +9,6 @@ from langchain_openai import ChatOpenAI
 class WriterAgent:
     """Agent responsible for writing documentation based on repository analysis."""
     
-    def __init__(self, 
     def __init__(self, api_key: str = None,
                  template_path: str = None):
         """
