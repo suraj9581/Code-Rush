@@ -9,7 +9,6 @@ from langchain_openai import ChatOpenAI
 class WriterAgent:
     """Agent responsible for writing documentation based on repository analysis."""
     
-    def __init__(self, 
     def __init__(self, api_key: str = None,
                  template_path: str = None):
         """
@@ -63,6 +62,10 @@ class WriterAgent:
             "contributors": self._generate_contributors(analysis_results),
             "dependencies": self._generate_dependencies(analysis_results),
         }
+        
+        # Add deployment section if available
+        if 'deployment' in analysis_results:
+            sections["deployment"] = self._generate_deployment_section(analysis_results['deployment'])
         
         # Combine all sections
         doc = self._combine_sections(sections)
@@ -132,6 +135,24 @@ class WriterAgent:
         template = self.env.get_template("main.md.j2")
         return template.render(sections=sections)
     
+    def _generate_deployment_section(self, deployment_configs: Dict) -> str:
+        """Generate the deployment configuration section."""
+        task = Task(
+            description=f"""Create a comprehensive deployment section using these configurations:
+            Docker: {deployment_configs.get('docker')}
+            Kubernetes: {deployment_configs.get('k8s')}
+            CI/CD: {deployment_configs.get('ci_cd')}
+            Environment Variables: {deployment_configs.get('env_vars')}
+            
+            Include:
+            1. Detailed explanation of deployment approach
+            2. Instructions for building and deploying
+            3. Configuration details
+            4. Environment setup requirements""",
+            expected_output="A detailed deployment configuration section"
+        )
+        return self.agent.execute_task(task)
+
     def _save_documentation(self, content: str, output_path: str) -> None:
         """Save the documentation to file."""
         # Convert markdown to HTML if output is HTML
